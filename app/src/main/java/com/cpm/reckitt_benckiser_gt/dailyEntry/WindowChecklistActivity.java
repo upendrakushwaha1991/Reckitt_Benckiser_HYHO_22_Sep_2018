@@ -220,6 +220,9 @@ public class WindowChecklistActivity extends AppCompatActivity {
                         current.setImage("");
                         camerabtn.setBackgroundResource(R.mipmap.camera_pink);
                     }
+                    else {
+                        current.setImage("");
+                    }
                     if (current.getImage2() != null
                             && !current.getImage2().equalsIgnoreCase("")) {
                         if (new File(CommonString.FILE_PATH + current.getImage2()).exists()) {
@@ -227,6 +230,9 @@ public class WindowChecklistActivity extends AppCompatActivity {
                         }
                         current.setImage2("");
                         camerabtn2.setBackgroundResource(R.mipmap.camera_pink);
+                    }
+                    else {
+                        current.setImage2("");
                     }
                     for (int i = 0; i < data.size(); i++) {
                         data.get(i).setANSWER_CD("0");

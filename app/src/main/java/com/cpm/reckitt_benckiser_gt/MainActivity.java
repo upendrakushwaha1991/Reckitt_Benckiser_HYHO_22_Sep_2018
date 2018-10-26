@@ -131,10 +131,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         if (id == R.id.nav_route_plan) {
-            Intent startDownload = new Intent(context, StoreListActivity.class);
-            startDownload.putExtra(CommonString.TAG_FROM, CommonString.TAG_FROM_JCP);
-            startActivity(startDownload);
-            overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
+            if (downloadIndex == 0) {
+                Intent startDownload = new Intent(context, StoreListActivity.class);
+                startDownload.putExtra(CommonString.TAG_FROM, CommonString.TAG_FROM_JCP);
+                startActivity(startDownload);
+                overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
+            } else {
+                AlertandMessages.showToastMsg(context, "Please Download Data First");
+            }
         } else if (id == R.id.nav_download) {
             if (checkNetIsAvailable()) {
                 if (!db.isCoverageDataFilled(visit_date)) {

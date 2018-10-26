@@ -66,7 +66,6 @@ public class DownloadActivity extends AppCompatActivity {
             keysList.add("Non_Category_Reason");
             keysList.add("Brand_Master");
 
-
             if (keysList.size() > 0) {
                 for (int i = 0; i < keysList.size(); i++) {
                     JSONObject jsonObject = new JSONObject();

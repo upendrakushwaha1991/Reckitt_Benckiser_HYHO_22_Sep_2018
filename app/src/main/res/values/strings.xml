@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Reckitt Benckiser HYHO</string>
+    <string name="app_name">RB HYHO</string>
     <string name="prompt_userid">Username</string>
     <string name="prompt_password">Password</string>
     <string name="login">Login</string>

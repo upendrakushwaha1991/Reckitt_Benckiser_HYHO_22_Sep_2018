@@ -136,7 +136,7 @@ public class NonWorkingActivity extends AppCompatActivity implements AdapterView
             public void onClick(View v) {
                 _pathforcheck = store_id + "_NONWORKING-" + visit_date.replace("/", "") + "_" + getCurrentTime().replace(":", "") + ".jpg";
                 _path = CommonString.FILE_PATH + _pathforcheck;
-                CommonFunctions.startAnncaCameraActivity(context, _path, null,false);
+                CommonFunctions.startAnncaCameraActivity(context, _path, null, false);
             }
         });
 
@@ -167,6 +167,7 @@ public class NonWorkingActivity extends AppCompatActivity implements AdapterView
                                                     cdata.setLongitude(String.valueOf(lon));
                                                     cdata.setImage(image1);
                                                     cdata.setCkeckout_image(image1);
+                                                    cdata.setRemark("");
                                                     //cdata.setRemark(text.getText().toString().replaceAll("[&^<>{}'$]", " "));
                                                     cdata.setStatus(CommonString.STORE_STATUS_LEAVE);
 
@@ -410,7 +411,7 @@ public class NonWorkingActivity extends AppCompatActivity implements AdapterView
                 ArrayList<JourneyPlan> journeyPlan = database.getSpecificStoreData(coverageBean.getStoreId());
 
                 //region Coverage Data
-                jsonObject = new JSONObject();
+              /*  jsonObject = new JSONObject();
                 jsonObject.put("StoreId", coverageBean.getStoreId());
                 jsonObject.put("VisitDate", coverageBean.getVisitDate());
                 jsonObject.put("Latitude", coverageBean.getLatitude());
@@ -424,7 +425,20 @@ public class NonWorkingActivity extends AppCompatActivity implements AdapterView
                 jsonObject.put("Distributor_Id", journeyPlan.get(0).getDistributorId());
                 jsonObject.put("Store_Type_Id", journeyPlan.get(0).getStoreTypeId());
                 jsonObject.put("Store_Category_Id", journeyPlan.get(0).getStoreCategoryId());
-                jsonObject.put("TSE_Id", 0);
+                jsonObject.put("TSE_Id", 0);*/
+
+                jsonObject = new JSONObject();
+                jsonObject.put("StoreId", coverageBean.getStoreId());
+                jsonObject.put("VisitDate", coverageBean.getVisitDate());
+                jsonObject.put("Latitude", coverageBean.getLatitude());
+                jsonObject.put("Longitude", coverageBean.getLongitude());
+                jsonObject.put("ReasonId", coverageBean.getReasonid());
+                jsonObject.put("Remark", coverageBean.getRemark());
+                jsonObject.put("ImageName", coverageBean.getImage());
+                jsonObject.put("AppVersion", app_ver);
+                jsonObject.put("UploadStatus", CommonString.KEY_U);
+                jsonObject.put("UserId", _UserId);
+                jsonObject.put("SubReasonId", "0");
 
                 jsonString2 = jsonObject.toString();
                 result = upload.downloadDataUniversal(jsonString2, CommonString.COVERAGE_NONWORKING);

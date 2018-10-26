@@ -11,11 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -23,6 +19,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -63,8 +60,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
@@ -122,6 +117,14 @@ public class GeoTaggingActivity extends AppCompatActivity implements OnMapReadyC
             // Building the GoogleApi client
             buildGoogleApiClient();
             createLocationRequest();
+        } else {
+            if (mGoogleApiClient == null) {
+                mGoogleApiClient = new GoogleApiClient.Builder(context)
+                        .addConnectionCallbacks(this)
+                        .addOnConnectionFailedListener(this)
+                        .addApi(LocationServices.API)
+                        .build();
+            }
         }
         locmanager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         enabled = locmanager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -180,12 +183,26 @@ public class GeoTaggingActivity extends AppCompatActivity implements OnMapReadyC
         camera_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                _pathforcheck = storeid + "_GeoTag-" + visitData.replace("/", "") + "_" + getCurrentTime().replace(":", "") + ".jpg";
-                _path = CommonString.FILE_PATH + _pathforcheck;
-                CommonFunctions.startAnncaCameraActivity(context, _path, null,false);
+                if (checkNetIsAvailable()) {
+                    if (latitude != 0.0 && longitude != 0.0) {
+                        _pathforcheck = storeid + "_GeoTag-" + visitData.replace("/", "") + "_" + getCurrentTime().replace(":", "") + ".jpg";
+                        _path = CommonString.FILE_PATH + _pathforcheck;
+                        CommonFunctions.startAnncaCameraActivity(context, _path, null, false);
+                    } else {
+                        AlertandMessages.showToastMsg(context, "Please wait for location");
+                    }
+                } else {
+                    AlertandMessages.showToastMsg(context, getResources().getString(R.string.nonetwork));
+                }
 
             }
         });
+
+        if (Build.VERSION.SDK_INT >= 23 &&
+                ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        }
+
 
     }
 
@@ -254,6 +271,15 @@ public class GeoTaggingActivity extends AppCompatActivity implements OnMapReadyC
             latitude = mLastLocation.getLatitude();
             longitude = mLastLocation.getLongitude();
 
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    || ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                if (mLastLocation != null) {
+                    latitude = mLastLocation.getLatitude();
+                    longitude = mLastLocation.getLongitude();
+
+                }
+            }
+
             latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLng);
@@ -273,8 +299,36 @@ public class GeoTaggingActivity extends AppCompatActivity implements OnMapReadyC
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    private void stopLocationUpdates() {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();// ATTENTION: This was auto-generated to implement the App Indexing API.
+// See https://g.co/AppIndexing/AndroidStudio for more information.
+        // AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        //client.disconnect();
+    }
+
+
+    @Override
     public void onConnectionSuspended(int i) {
-        mGoogleApiClient.connect();
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
     }
 
     @Override

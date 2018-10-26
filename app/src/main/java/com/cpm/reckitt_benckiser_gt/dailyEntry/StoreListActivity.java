@@ -102,6 +102,8 @@ public class StoreListActivity extends AppCompatActivity implements View.OnClick
     ArrayList<JourneyPlan> filterdNames;
     ArrayList<JourneyPlan> searchList;
     Intent categortDbsrIntent;
+    SharedPreferences preferences;
+    private int downloadIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,6 +190,7 @@ public class StoreListActivity extends AppCompatActivity implements View.OnClick
     protected void onResume() {
         // TODO Auto-generated method stub
         super.onResume();
+        downloadIndex = preferences.getInt(CommonString.KEY_DOWNLOAD_INDEX, 0);
         setLitData();
     }
 
@@ -641,7 +644,7 @@ public class StoreListActivity extends AppCompatActivity implements View.OnClick
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
         date = preferences.getString(CommonString.KEY_DATE, null);
         linearlay = (LinearLayout) findViewById(R.id.no_data_lay_ll);
         storelist_ll = (LinearLayout) findViewById(R.id.storelist_ll);
@@ -1301,7 +1304,7 @@ public class StoreListActivity extends AppCompatActivity implements View.OnClick
         }
 
         coverage = db.getCoverageData(date);
-        if (storelist.size() > 0) {
+        if (storelist.size() > 0 && downloadIndex == 0) {
             adapter = new ValueAdapter(getApplicationContext(), storelist);
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(context));

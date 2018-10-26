@@ -48,7 +48,7 @@ import java.util.List;
 
 public class RBGTDatabase extends SQLiteOpenHelper {
 
-    public static final String DATABASE_NAME = "RB_HYHO_DB";
+    public static final String DATABASE_NAME = "RB_HYHO_DB1";
     public static final int DATABASE_VERSION = 1;
     private SQLiteDatabase db;
     Context context;
@@ -362,6 +362,35 @@ public class RBGTDatabase extends SQLiteOpenHelper {
         Log.d("Fetching check->Stop<", "-");
         return list;
     }
+
+    public ArrayList<BrandMaster> getBrandFromCategory(Integer categoryCd) {
+        Log.d("Fetchecklidata->Start<-", "-");
+        ArrayList<BrandMaster> list = new ArrayList<>();
+        Cursor dbcursor = null;
+        try {
+            dbcursor = db.rawQuery("Select * from Brand_Master where Category_Id = '" + categoryCd + "'", null);
+
+            if (dbcursor != null) {
+                dbcursor.moveToFirst();
+                while (!dbcursor.isAfterLast()) {
+                    BrandMaster ch = new BrandMaster();
+                    ch.setBrandId(dbcursor.getInt(dbcursor.getColumnIndexOrThrow("Brand_Id")));
+                    ch.setBrand(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Brand")));
+                    //ch.setAnswer("");
+                    list.add(ch);
+                    dbcursor.moveToNext();
+                }
+                dbcursor.close();
+                return list;
+            }
+        } catch (Exception e) {
+            Log.d("Exc get windows list!", e.toString());
+            return list;
+        }
+        Log.d("Fetching check->Stop<", "-");
+        return list;
+    }
+
 
 
     public ArrayList<CategoryMaster> getCategoryDBSRData(JourneyPlan jcp) {
@@ -1047,6 +1076,7 @@ public class RBGTDatabase extends SQLiteOpenHelper {
                 values.put("Brand_Sequence", data.get(i).getBrandSequence());
                 values.put("Sub_Category_Id", data.get(i).getSubcategoryId());
                 values.put("Company_Id", data.get(i).getCompany_Id());
+                values.put("Category_Id", data.get(i).getCategoryId());
 
                 long id = db.insert("Brand_Master", null, values);
                 if (id == -1) {

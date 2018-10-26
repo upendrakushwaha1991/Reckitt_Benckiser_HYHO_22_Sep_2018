@@ -575,7 +575,7 @@ public class UploadImageWithRetrofit extends ReferenceVariablesForDownloadActivi
 
                         jsonObject = new JSONObject();
                         jsonObject.put("MID", coverageList.get(coverageIndex).getMID());
-                        jsonObject.put("Keys", "Window_Data");
+                        jsonObject.put("Keys", "Window_Data_New");
                         jsonObject.put("JsonData", compArray.toString());
                         jsonObject.put("UserId", coverageList.get(coverageIndex).getUserId());
 
@@ -1498,7 +1498,7 @@ public class UploadImageWithRetrofit extends ReferenceVariablesForDownloadActivi
                                                 }
                                             } else {
                                                 if (rightname != null && !rightname.equalsIgnoreCase("DBSR")) {
-                                                    throw new java.lang.Exception();
+                                                  //  throw new java.lang.Exception();
                                                 }
 
                                             }
@@ -1523,7 +1523,7 @@ public class UploadImageWithRetrofit extends ReferenceVariablesForDownloadActivi
                                                 }
                                             } else {
                                                 if (rightname != null && !rightname.equalsIgnoreCase("DBSR")) {
-                                                    throw new java.lang.Exception();
+                                                   // throw new java.lang.Exception();
                                                 }
                                             }
                                             break;

@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -183,7 +182,7 @@ public class ServiceActivityFragment extends Fragment {
                                 long date = System.currentTimeMillis();
                                 SimpleDateFormat sdf = new SimpleDateFormat("MMM/dd/yy");
                                 String dateString = sdf.format(date);
-                                String currentDBPath = "//data//com.cpm.reckitt_benckiser_gt//databases//" + RBGTDatabase.DATABASE_NAME;
+                                String currentDBPath = "//data//com.cpm.reckitt_benckiser_hyho//databases//" + RBGTDatabase.DATABASE_NAME;
                                 String backupDBPath = user_name + "_RB_HYHO_BACKUP_" + dateString.replace('/', '_') + getCurrentTime().replace(":", "") + ".db";
                                 String path = Environment.getExternalStorageDirectory().getPath() + "/RB_HYHO_Backup";
                                 File currentDB = new File(data, currentDBPath);
@@ -210,7 +209,7 @@ public class ServiceActivityFragment extends Fragment {
                                     }
                                 }
 
-                                Snackbar.make(rec, "Database Exported And Uploaded Successfully", Snackbar.LENGTH_SHORT).show();
+                                // Snackbar.make(rec, "Database Exported And Uploaded Successfully", Snackbar.LENGTH_SHORT).show();
                             }
                         } catch (Exception e) {
                             e.printStackTrace();

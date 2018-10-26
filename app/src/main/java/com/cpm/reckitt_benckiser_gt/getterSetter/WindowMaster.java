@@ -73,7 +73,7 @@ public class WindowMaster implements Serializable {
     String initiativeIMG = "";
     String checklist_Id;
     String checklist;
-    String image;
+    String image="";
 
     public String getImage2() {
         return image2;
@@ -83,7 +83,7 @@ public class WindowMaster implements Serializable {
         this.image2 = image2;
     }
 
-    String image2;
+    String image2="";
 
     public boolean isExist() {
         return exist;

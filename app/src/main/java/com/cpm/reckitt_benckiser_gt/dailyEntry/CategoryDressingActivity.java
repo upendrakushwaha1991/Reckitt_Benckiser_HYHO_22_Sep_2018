@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +34,7 @@ import android.widget.ToggleButton;
 import com.cpm.reckitt_benckiser_gt.R;
 import com.cpm.reckitt_benckiser_gt.database.RBGTDatabase;
 import com.cpm.reckitt_benckiser_gt.getterSetter.AnswerChecklistGetterSetter;
+import com.cpm.reckitt_benckiser_gt.getterSetter.BrandMaster;
 import com.cpm.reckitt_benckiser_gt.getterSetter.CategoryMaster;
 import com.cpm.reckitt_benckiser_gt.getterSetter.ChecklistGetterSetter;
 import com.cpm.reckitt_benckiser_gt.getterSetter.JourneyPlan;
@@ -67,6 +69,7 @@ public class CategoryDressingActivity extends AppCompatActivity {
     boolean errorFlag = false;
     ArrayList<Integer> error_position_header = new ArrayList();
     ArrayList<Integer> error_position_child = new ArrayList();
+    AlertDialog alertDialog = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -243,6 +246,8 @@ public class CategoryDressingActivity extends AppCompatActivity {
             final ImageView camerabtn = (ImageView) convertView.findViewById(R.id.image_window);
             final Spinner reason_spinner = (Spinner) convertView.findViewById(R.id.reason_spinner);
             ToggleButton switch_exists = (ToggleButton) convertView.findViewById(R.id.switch_exists);
+            ImageView image_info = (ImageView) convertView.findViewById(R.id.image_info);
+            image_info.setVisibility(View.VISIBLE);
             lblListHeader.setText(headerTitle.getCategory());
             reason_spinner.setVisibility(View.GONE);
 
@@ -276,6 +281,15 @@ public class CategoryDressingActivity extends AppCompatActivity {
 
                 }
             });*/
+
+            image_info.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    db.open();
+                    ArrayList<BrandMaster> brandlist = db.getBrandFromCategory(headerTitle.getCategoryId());
+                    createAndDisplayDialog(brandlist);
+                }
+            });
 
 
             cardView.setOnClickListener(new View.OnClickListener() {
@@ -335,7 +349,7 @@ public class CategoryDressingActivity extends AppCompatActivity {
                     String intime = CommonFunctions.getCurrentTime();
                     _pathforcheck = journeyPlan.getStoreId() + "_Cat_Dressing-" + groupPosition + "_" + journeyPlan.getVisitDate().replace("/", "") + "_" + intime.replace(":", "") + ".jpg";
                     path = CommonString.FILE_PATH + _pathforcheck;
-                    CommonFunctions.startAnncaCameraActivity(context, path, null,false);
+                    CommonFunctions.startAnncaCameraActivity(context, path, null, false);
                 }
             });
 
@@ -387,6 +401,45 @@ public class CategoryDressingActivity extends AppCompatActivity {
         }
 
     }
+
+    private void createAndDisplayDialog(ArrayList<BrandMaster> arrayList) {
+        if (arrayList.size() > 0) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Brands");
+            LinearLayout layout = new LinearLayout(context);
+            layout.setBackgroundColor(Color.WHITE);
+            layout.setOrientation(LinearLayout.VERTICAL);
+            TextView tvMessage = null;
+            LinearLayout item_ll = null;
+
+           /* View.OnClickListener onClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //AlertandMessages.showToastMsg(context, ((LinearLayout) v).getTag().toString());
+                }
+            };*/
+
+            for (int i = 0; i < arrayList.size(); i++) {
+                item_ll = new LinearLayout(context);
+                item_ll.setBackgroundColor(Color.WHITE);
+                item_ll.setOrientation(LinearLayout.HORIZONTAL);
+                item_ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+                tvMessage = new TextView(context);
+                tvMessage.setText(arrayList.get(i).getBrand());
+                tvMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22f);
+                tvMessage.setPadding(20, 10, 50, 10);
+                //item_ll.setOnClickListener(onClickListener);
+                item_ll.addView(tvMessage);
+                layout.addView(item_ll);
+            }
+            builder.setView(layout);
+            alertDialog = builder.create();
+            alertDialog.show();
+        } else {
+            AlertandMessages.showToastMsg(context, "No Brand");
+        }
+    }
+
 
     public class ViewHolder {
         CardView cardView;
