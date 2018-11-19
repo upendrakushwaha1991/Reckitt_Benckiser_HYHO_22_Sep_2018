@@ -963,6 +963,10 @@ public class RBGTDatabase extends SQLiteOpenHelper {
                 values.put("Geo_Tag", jcpList.get(i).getGeoTag());
                 values.put("Distributor_Id", jcpList.get(i).getDistributorId());
                 values.put("Classification_Id", jcpList.get(i).getClassificationId());
+                values.put("Latitude", jcpList.get(i).getLatitude());
+                values.put("Longitude", jcpList.get(i).getLongitude());
+                values.put("GeoFencing", jcpList.get(i).getGeoFencing());
+
                 long id = db.insert("Journey_Plan", null, values);
                 if (id == -1) {
                     throw new Exception();
@@ -1872,6 +1876,10 @@ public class RBGTDatabase extends SQLiteOpenHelper {
                     sb.setDistributorId(Integer.parseInt(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Distributor_Id"))));
                     sb.setDistributorN(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Distributor")));
                     sb.setClassificationId(Integer.parseInt(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Classification_Id"))));
+                    sb.setLongitude(Double.valueOf(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Longitude"))));
+                    sb.setLatitude(Double.valueOf(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Latitude"))));
+                    sb.setGeoFencing(Integer.valueOf(dbcursor.getString(dbcursor.getColumnIndexOrThrow("GeoFencing"))));
+
                     if (sb.getStoreTypeId() == 1) {
                         sb.setColourCode(R.color.peachpuff);
                     } else if (sb.getStoreTypeId() == 2) {

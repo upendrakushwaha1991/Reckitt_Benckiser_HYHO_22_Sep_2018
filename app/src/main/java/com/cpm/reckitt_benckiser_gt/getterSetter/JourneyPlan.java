@@ -86,7 +86,39 @@ public class JourneyPlan implements Serializable {
     @SerializedName("Classification_Id")
     @Expose
     private Integer classificationId;
+    @SerializedName("Latitude")
+    @Expose
+    private Double latitude;
+    @SerializedName("Longitude")
+    @Expose
+    private Double longitude;
+    @SerializedName("GeoFencing")
+    @Expose
+    private Integer geoFencing;
 
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public Integer getGeoFencing() {
+        return geoFencing;
+    }
+
+    public void setGeoFencing(Integer geoFencing) {
+        this.geoFencing = geoFencing;
+    }
 
     public Integer getClassificationId() {
         return classificationId;

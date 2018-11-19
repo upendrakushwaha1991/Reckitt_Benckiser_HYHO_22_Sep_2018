@@ -353,8 +353,8 @@ public class LoginActivity extends AppCompatActivity {
         editor = preferences.edit();
         museridView = (AutoCompleteTextView) findViewById(R.id.userid);
         mPasswordView = (EditText) findViewById(R.id.password);
-        /*museridView.setText("test");
-        mPasswordView.setText("ck@123");*/
+        museridView.setText("test");
+        mPasswordView.setText("cpm@123%");
         museridSignInButton = (Button) findViewById(R.id.user_login_button);
         museridSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override

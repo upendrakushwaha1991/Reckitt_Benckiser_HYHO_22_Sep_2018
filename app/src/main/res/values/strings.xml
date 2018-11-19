@@ -66,6 +66,7 @@
     <string name="title_activity_category_dressing">Category Execution</string>
     <string name="datanotfound">Data not found in</string>
     <string name="blank"></string>
+    <string name="distance_from_the_store">Distance from Store</string>
     <string name="title_activity_geo_tag_store_list">GeoTagStoreList</string>
     <string name="title_geo_tag_activity_geo_already_done">Store Already Geotagged</string>
     <string name="title_activity_geo_tagging">GeoTaggingActivity</string>
@@ -79,4 +80,6 @@
     <string name="title_activity_window_checklist">Window Checklist</string>
     <string name="title_activity_window_menu">Window Execution</string>
     <string name="camera_not_found">Camera Not found</string>
+    <string name="you_need_to_be_in_the_store">You need to be in the store to Checkin/Checkout</string>
+    <string name="meters">meters</string>
 </resources>

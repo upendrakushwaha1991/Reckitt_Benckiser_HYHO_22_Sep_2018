@@ -32,7 +32,7 @@
             android:title="@string/menu_exit" />
     </group>
 
-    <item android:title="">
+    <item android:title="Others">
         <menu>
             <item
                 android:id="@+id/nav_services"

@@ -39,6 +39,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cpm.reckitt_benckiser_gt.R;
 import com.cpm.reckitt_benckiser_gt.database.RBGTDatabase;
@@ -94,6 +95,7 @@ public class StoreListActivity extends AppCompatActivity implements View.OnClick
     private FloatingActionButton fab;
     private double lat;
     private double lon;
+    int distanceGeoPhence;
     private GoogleApiClient mGoogleApiClient;
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
     private LocationRequest mLocationRequest;
@@ -507,26 +509,51 @@ public class StoreListActivity extends AppCompatActivity implements View.OnClick
                                 }
                             }
                         }
-                        if (flag == true) {
-                            Intent in = new Intent(context, StoreimageActivity.class);
-                            in.putExtra(CommonString.TAG_OBJECT, current);
-                            in.putExtra(CommonString.TAG_FROM, tag_from);
-                            startActivity(in);
-                            overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
-                        } else {
-                            Intent in = new Intent(context, EntryMenuActivity.class);
-                            in.putExtra(CommonString.TAG_OBJECT, current);
-                            in.putExtra(CommonString.TAG_FROM, tag_from);
-                            startActivity(in);
-                            overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
-                        }
-                        if (isVisitLater) {
-                            new DeleteCoverageData(String.valueOf(current.getStoreId()), String.valueOf(current.getVisitDate()), userId, false).execute();
-                            UpdateStore(current.getStoreId() + "");
-                            dialog.cancel();
-                        }
-                        dialog.cancel();
+                        boolean flag_entry = true;
 
+                        if (!rightname.equalsIgnoreCase("DBSR")) {
+                            int distance = 0;
+                            if(flag){
+                                double store_lat = Double.parseDouble(String.valueOf(current.getLatitude()));
+                                double store_lon = Double.parseDouble(String.valueOf(current.getLongitude()));
+                                distanceGeoPhence = current.getGeoFencing();
+                                if(store_lat!=0.0 && store_lon!=0.0){
+                                    distance = distFrom(store_lat, store_lon, lat, lon);
+
+                                    if (/*true*/distance > distanceGeoPhence) {
+                                        flag_entry = false;
+                                    }
+                                    else {
+                                        String msg = getString(R.string.distance_from_the_store) + " " + distance + " meters";
+                                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }
+                            if(flag_entry) {
+                                Toast.makeText(context, "Distance - " + distance + " meters", Toast.LENGTH_SHORT).show();
+                              gotoActivity(flag,isVisitLater,current);
+                            }else{
+
+                                String msg = getString(R.string.you_need_to_be_in_the_store) + "\n " + getString(R.string.distance_from_the_store)+ " - " + distance + " "+getString(R.string.meters);
+                                dialog.cancel();
+                                AlertDialog.Builder builder = new AlertDialog.Builder(StoreListActivity.this);
+                                builder.setTitle(getResources().getString(R.string.dialog_title));
+                                builder.setMessage(msg).setCancelable(false)
+                                        .setPositiveButton(getResources().getString(R.string.ok),
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog1,
+                                                                        int id) {
+
+                                                        dialog1.cancel();
+                                                    }
+                                                });
+
+                                AlertDialog alert = builder.create();
+                                alert.show();
+                            }
+                        }else{
+                            gotoActivity(flag,isVisitLater,current);
+                        }
                     } else {
                         dialog.cancel();
                         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -601,8 +628,44 @@ public class StoreListActivity extends AppCompatActivity implements View.OnClick
 
         dialog.show();
     }
+
+    private void gotoActivity(boolean flag, boolean isVisitLater, JourneyPlan current) {
+        if (flag) {
+            Intent in = new Intent(context, StoreimageActivity.class);
+            in.putExtra(CommonString.TAG_OBJECT, current);
+            in.putExtra(CommonString.TAG_FROM, tag_from);
+            startActivity(in);
+            overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
+        } else {
+            Intent in = new Intent(context, EntryMenuActivity.class);
+            in.putExtra(CommonString.TAG_OBJECT, current);
+            in.putExtra(CommonString.TAG_FROM, tag_from);
+            startActivity(in);
+            overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
+        }
+        if (isVisitLater) {
+            new DeleteCoverageData(String.valueOf(current.getStoreId()), String.valueOf(current.getVisitDate()), userId, false).execute();
+            UpdateStore(current.getStoreId() + "");
+            dialog.cancel();
+        }
+        dialog.cancel();
+    }
     //endregion
 
+
+
+    public static int distFrom(double lat1, double lng1, double lat2, double lng2) {
+        double earthRadius = 6371000; //meters
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLng = Math.toRadians(lng2 - lng1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        int dist = (int) (earthRadius * c);
+
+        return dist;
+    }
 
     //region UpdateStore
     private void UpdateStore(String storeid) {
