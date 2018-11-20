@@ -518,6 +518,23 @@ public class StoreListActivity extends AppCompatActivity implements View.OnClick
                                 double store_lon = Double.parseDouble(String.valueOf(current.getLongitude()));
                                 distanceGeoPhence = current.getGeoFencing();
                                 if(store_lat!=0.0 && store_lon!=0.0){
+
+                                    if (checkPlayServices()) {
+                                        // Building the GoogleApi client
+                                        buildGoogleApiClient();
+
+                                        createLocationRequest();
+                                    }
+
+                                    // Create an instance of GoogleAPIClient.
+                                    if (mGoogleApiClient == null) {
+                                        mGoogleApiClient = new GoogleApiClient.Builder(StoreListActivity.this)
+                                                .addConnectionCallbacks(StoreListActivity.this)
+                                                .addOnConnectionFailedListener(StoreListActivity.this)
+                                                .addApi(LocationServices.API)
+                                                .build();
+                                    }
+
                                     distance = distFrom(store_lat, store_lon, lat, lon);
 
                                     if (/*true*/distance > distanceGeoPhence) {
