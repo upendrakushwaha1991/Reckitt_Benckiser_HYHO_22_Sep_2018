@@ -81,5 +81,6 @@
     <string name="title_activity_window_menu">Window Execution</string>
     <string name="camera_not_found">Camera Not found</string>
     <string name="you_need_to_be_in_the_store">You need to be in the store to Checkin/Checkout</string>
+    <string name="title_activity_store_profile">StoreProfileActivity</string>
     <string name="meters">meters</string>
 </resources>

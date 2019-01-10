@@ -2,10 +2,12 @@ package com.cpm.reckitt_benckiser_gt.dailyEntry;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -19,10 +21,15 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -46,7 +53,11 @@ import java.util.HashMap;
 import java.util.List;
 
 public class WindowChecklistActivity extends AppCompatActivity {
-
+    Button rfimage;
+    String window_image;
+    Dialog dialog1;
+    WebView webview;
+    ImageView img_main;
     RBGTDatabase db;
     Context context;
     SharedPreferences preferences;
@@ -78,6 +89,14 @@ public class WindowChecklistActivity extends AppCompatActivity {
         setContentView(R.layout.activity_window_checklist);
         declaration();
         prepareList();
+        rfimage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popup(window_image);
+
+            }
+        });
+
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -540,6 +559,7 @@ public class WindowChecklistActivity extends AppCompatActivity {
         lay_Camera = (LinearLayout) findViewById(R.id.lay_Camera);
         lay_reason = (LinearLayout) findViewById(R.id.lay_reason);
         fab = (FloatingActionButton) findViewById(R.id.fab);
+        rfimage = (Button) findViewById(R.id.rfimage);
         db = new RBGTDatabase(context);
         db.open();
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -549,12 +569,59 @@ public class WindowChecklistActivity extends AppCompatActivity {
                 && getIntent().getSerializableExtra(CommonString.TAG_WINDOW_OBJECT) != null) {
             journeyPlan = (JourneyPlan) getIntent().getSerializableExtra(CommonString.TAG_OBJECT);
             current = (WindowMaster) getIntent().getSerializableExtra(CommonString.TAG_WINDOW_OBJECT);
+            window_image = current.getWindow_Image_refrance();
         }
         getSupportActionBar().setTitle(current.getWindow());
         lblListHeader.setText(current.getBrand() + " - " + current.getWindow());
         rec_checklist = (RecyclerView) findViewById(R.id.rec_checklist);
         i = new Intent(context, CamTestActivity.class);
         i.putExtra(CommonString.TAG_OBJECT, journeyPlan);
+    }
+
+    private void popup(final String window_image) {
+
+        dialog1 = new Dialog(WindowChecklistActivity.this);
+        dialog1.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog1.setContentView(R.layout.dialog_loreal);
+        webview = (WebView) dialog1.findViewById(R.id.webview);
+        img_main = (ImageView) dialog1.findViewById(R.id.img_main);
+        // dialog1.setCancelable(false);
+        dialog1.setCanceledOnTouchOutside(true);
+        db.open();
+
+        webview.setWebViewClient(new MyWebViewClient());
+
+
+        webview.getSettings().setJavaScriptEnabled(true);
+        if (window_image != null) {
+            webview.loadUrl(window_image);
+        }
+
+        dialog1.show();
+    }
+
+    private class MyWebViewClient extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+
+            //     img_main.setVisibility(View.VISIBLE);
+            webview.setVisibility(View.VISIBLE);
+            super.onPageFinished(view, url);
+            view.clearCache(true);
+        }
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+
+            super.onPageStarted(view, url, favicon);
+        }
+
     }
 
 }

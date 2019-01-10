@@ -416,4 +416,21 @@ public class CommonString {
             + " VARCHAR)";
 
 
+    public static final String KEY_STORE_TYPE = "STORE_TYPE";
+    public static final String KEY_STORE_TYPE_CD = "STORE_TYPE_CD";
+    public static final String KEY_STORE_ADDRESS = "STORE_ADDRESS";
+    public static final String KEY_STORE_CITY = "STORE_CITY";
+    public static final String TABLE_STORE_PROFILE_DATA = "STORE_PROFILE_DATA";
+    public static final String CREATE_TABLE_STORE_PROFILE_DATA = "CREATE TABLE  IF NOT EXISTS "
+            + TABLE_STORE_PROFILE_DATA + " (" + KEY_ID
+            + " INTEGER PRIMARY KEY AUTOINCREMENT ," + KEY_STORE_ID
+            + " INTEGER,USER_ID VARCHAR, "
+            + KEY_VISIT_DATE + " VARCHAR,"
+            + KEY_STORE_TYPE_CD + " INTEGER,"
+            + KEY_STORE_ADDRESS + " VARCHAR,"
+            + KEY_STORE_CITY + " VARCHAR,"
+            + KEY_STORE_NAME + " VARCHAR,"
+            + KEY_STORE_TYPE + " VARCHAR)";
+
+
 }

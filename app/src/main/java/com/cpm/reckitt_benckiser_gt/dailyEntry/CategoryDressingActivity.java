@@ -3,10 +3,12 @@ package com.cpm.reckitt_benckiser_gt.dailyEntry;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -20,10 +22,14 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -48,7 +54,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CategoryDressingActivity extends AppCompatActivity {
-
+    String store_type;
+    ImageView img_main;
+    Dialog dialog1;
+    WebView webview;
     ExpandableListAdapter adapter;
     JourneyPlan journeyPlan;
     RBGTDatabase db;
@@ -238,6 +247,7 @@ public class CategoryDressingActivity extends AppCompatActivity {
             }
 
             final CategoryMaster headerTitle = (CategoryMaster) getGroup(groupPosition);
+            final String cat_imge = headerTitle.getCategoryPlanogramImageurl();
 
             TextView lblListHeader = (TextView) convertView.findViewById(R.id.txt_header);
             CardView cardView = (CardView) convertView.findViewById(R.id.cardview_exists);
@@ -245,12 +255,21 @@ public class CategoryDressingActivity extends AppCompatActivity {
             final LinearLayout lay_reason = (LinearLayout) convertView.findViewById(R.id.lay_reason);
             final ImageView camerabtn = (ImageView) convertView.findViewById(R.id.image_window);
             final Spinner reason_spinner = (Spinner) convertView.findViewById(R.id.reason_spinner);
+            final LinearLayout ly_image = (LinearLayout) convertView.findViewById(R.id.ly_image);
             ToggleButton switch_exists = (ToggleButton) convertView.findViewById(R.id.switch_exists);
             ImageView image_info = (ImageView) convertView.findViewById(R.id.image_info);
+            Button rfimage = (Button) convertView.findViewById(R.id.rfimage);
             image_info.setVisibility(View.VISIBLE);
             lblListHeader.setText(headerTitle.getCategory());
             reason_spinner.setVisibility(View.GONE);
+            if (store_type.equalsIgnoreCase("Self Service")){
+                rfimage.setVisibility(View.VISIBLE);
+                ly_image.setVisibility(View.VISIBLE);
 
+            }else {
+                rfimage.setVisibility(View.INVISIBLE);
+                ly_image.setVisibility(View.GONE);
+            }
             /*reason_adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item);
             for (int i = 0; i < reasondata.size(); i++) {
                 reason_adapter.add(reasondata.get(i).getCReason());
@@ -281,6 +300,15 @@ public class CategoryDressingActivity extends AppCompatActivity {
 
                 }
             });*/
+            rfimage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    popup(cat_imge);
+
+                }
+            });
+
 
             image_info.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -614,6 +642,7 @@ public class CategoryDressingActivity extends AppCompatActivity {
         //metadata_global = preferences.getString(CommonString.KEY_META_DATA, "");
         if (getIntent().getSerializableExtra(CommonString.TAG_OBJECT) != null) {
             journeyPlan = (JourneyPlan) getIntent().getSerializableExtra(CommonString.TAG_OBJECT);
+            store_type=journeyPlan.getStoreType();
         }
         if (journeyPlan.getStoreTypeId() != 3) {
             expandableListView.setGroupIndicator(null);
@@ -640,4 +669,49 @@ public class CategoryDressingActivity extends AppCompatActivity {
         finish();
         overridePendingTransition(R.anim.activity_back_in, R.anim.activity_back_out);
     }
+    private void popup(final String window_image) {
+
+        dialog1 = new Dialog(CategoryDressingActivity.this);
+        dialog1.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog1.setContentView(R.layout.dialog_loreal);
+        webview = (WebView) dialog1.findViewById(R.id.webview);
+        img_main = (ImageView) dialog1.findViewById(R.id.img_main);
+        // dialog1.setCancelable(false);
+        dialog1.setCanceledOnTouchOutside(true);
+        db.open();
+
+        webview.setWebViewClient(new MyWebViewClient());
+
+
+        webview.getSettings().setJavaScriptEnabled(true);
+        if (window_image != null) {
+            webview.loadUrl(window_image);
+        }
+
+        dialog1.show();
+    }
+    private class MyWebViewClient extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+
+            //     img_main.setVisibility(View.VISIBLE);
+            webview.setVisibility(View.VISIBLE);
+            super.onPageFinished(view, url);
+            view.clearCache(true);
+        }
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+
+            super.onPageStarted(view, url, favicon);
+        }
+
+    }
+
 }

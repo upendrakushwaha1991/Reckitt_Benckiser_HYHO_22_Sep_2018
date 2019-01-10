@@ -594,7 +594,8 @@ public class StoreimageActivity extends AppCompatActivity implements View.OnClic
                 dialog.dismiss();
                 if (database.InsertCoverageData(cdata) > 0) {
                     if (database.updateCheckoutStatus(store_id, CommonString.KEY_CHECK_IN, CommonString.TABLE_Journey_Plan) > 0) {
-                        Intent in = new Intent(context, EntryMenuActivity.class);
+                      //  Intent in = new Intent(context, EntryMenuActivity.class);
+                        Intent in = new Intent(context, StoreProfileActivity.class);
                         in.putExtra(CommonString.TAG_OBJECT, jcpGetset);
                         in.putExtra(CommonString.TAG_FROM, tag_from);
                         startActivity(in);

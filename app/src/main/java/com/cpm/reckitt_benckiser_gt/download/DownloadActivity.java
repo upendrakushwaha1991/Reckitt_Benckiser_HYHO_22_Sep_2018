@@ -65,6 +65,7 @@ public class DownloadActivity extends AppCompatActivity {
             keysList.add("Mapping_Category_Checklist");
             keysList.add("Non_Category_Reason");
             keysList.add("Brand_Master");
+            keysList.add("Store_Type_Master");
 
             if (keysList.size() > 0) {
                 for (int i = 0; i < keysList.size(); i++) {

@@ -18,6 +18,17 @@ public class MappingCategoryDressing {
     @SerializedName("Category_Id")
     @Expose
     private Integer categoryId;
+    @SerializedName("Category_Planogram_Imageurl")
+    @Expose
+    private String categoryPlanogramImageurl;
+
+    public String getCategoryPlanogramImageurl() {
+        return categoryPlanogramImageurl;
+    }
+
+    public void setCategoryPlanogramImageurl(String categoryPlanogramImageurl) {
+        this.categoryPlanogramImageurl = categoryPlanogramImageurl;
+    }
 
     public Integer getStateId() {
         return stateId;

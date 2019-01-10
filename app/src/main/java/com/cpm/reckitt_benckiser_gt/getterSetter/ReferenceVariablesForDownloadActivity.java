@@ -23,5 +23,6 @@ public class ReferenceVariablesForDownloadActivity {
     protected NonCategoryReasonGetterSetter nonCategoryReasonGetterSetter;
     protected NonWindowReasonGetterSetter nonWindowReasonGetterSetter;
     protected MappingCategoryDressingGetterSetter mappingCategoryDressingGetterSetter;
+    protected StoreTypeMasterGetterSetter storeTypeMasterGetterSetter;
 
 }

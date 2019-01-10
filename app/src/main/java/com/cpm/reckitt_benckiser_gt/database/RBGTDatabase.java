@@ -33,6 +33,9 @@ import com.cpm.reckitt_benckiser_gt.getterSetter.NonWindowReason;
 import com.cpm.reckitt_benckiser_gt.getterSetter.NonWindowReasonGetterSetter;
 import com.cpm.reckitt_benckiser_gt.getterSetter.NonWorkingReason;
 import com.cpm.reckitt_benckiser_gt.getterSetter.NonWorkingReasonGetterSetter;
+import com.cpm.reckitt_benckiser_gt.getterSetter.StoreProfileGetterSetter;
+import com.cpm.reckitt_benckiser_gt.getterSetter.StoreTypeMaster;
+import com.cpm.reckitt_benckiser_gt.getterSetter.StoreTypeMasterGetterSetter;
 import com.cpm.reckitt_benckiser_gt.getterSetter.WindowCheckAnswerGetterSetter;
 import com.cpm.reckitt_benckiser_gt.getterSetter.WindowChecklist;
 import com.cpm.reckitt_benckiser_gt.getterSetter.WindowChecklistAnswer;
@@ -78,6 +81,8 @@ public class RBGTDatabase extends SQLiteOpenHelper {
             db.execSQL(CommonString.CREATE_TABLE_STORE_GEOTAGGING);
             db.execSQL(CommonString.CREATE_TABLE_CATEGORY_DBSR_DATA);
             db.execSQL(CommonString.CREATE_TABLE_Journey_Plan_DBSR_Saved);
+
+            db.execSQL(CommonString.CREATE_TABLE_STORE_PROFILE_DATA);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -108,6 +113,7 @@ public class RBGTDatabase extends SQLiteOpenHelper {
         db.delete(CommonString.TABLE_INSERT_CATEGORY_DRESSING_CHECKLIST_DATA, CommonString.KEY_STORE_ID + "='" + storeid + "'", null);
         //db.delete(CommonString.TABLE_Journey_Plan_DBSR_Saved, CommonString.KEY_STORE_ID + "='" + storeid + "'", null);
         db.delete(CommonString.TABLE_CATEGORY_DBSR_DATA, CommonString.KEY_STORE_ID + "='" + storeid + "'", null);
+        db.delete(CommonString.TABLE_STORE_PROFILE_DATA, CommonString.KEY_STORE_ID + "='" + storeid + "'", null);
     }
 
     public void updateStatus(String id, String status) {
@@ -299,7 +305,7 @@ public class RBGTDatabase extends SQLiteOpenHelper {
                     "inner join Mapping_Visibility_Initiatives wmap on wm.window_id=wmap.window_id " +
                     "where state_id = " + jcp.getStateId() + " and Distributor_id = " + jcp.getDistributorId() + " and Store_Type_Id = " + jcp.getStoreTypeId() + "", null);*/
 
-            dbcursor = db.rawQuery("select wmap.Brand_id as Brand_id,bm.Brand as Brand, wm.Window_id as Window_id, wm.window as window, IFNULL(d.Existornot,'false') as EXISTORNOT, IFNULL(d.window_Image,'') as WINDOW_IMAGE,IFNULL( d.Reason_Id,'0') as REASON_ID from window_master wm inner join Mapping_Visibility_Initiatives wmap on wm.window_id = wmap.window_id" +
+            dbcursor = db.rawQuery("select wmap.Brand_id as Brand_id,bm.Brand as Brand, wm.Window_id as Window_id, wm.window as window,wm.Window_Image as Window_Image, IFNULL(d.Existornot,'false') as EXISTORNOT, IFNULL(d.window_Image,'') as WINDOW_IMAGE,IFNULL( d.Reason_Id,'0') as REASON_ID from window_master wm inner join Mapping_Visibility_Initiatives wmap on wm.window_id = wmap.window_id" +
                     " inner join Brand_Master bm on wmap.Brand_Id = bm.Brand_Id left join" +
                     " (select * from WINDOWS_DATA Where Store_Id = " + jcp.getStoreId() + " and Date ='" + jcp.getVisitDate() + "') as d on wm.Window_Id = d.WINDOW_CD" +
                     "  where state_id = " + jcp.getStateId() + " and Distributor_id = " + jcp.getDistributorId() + " and Store_Type_Id = " + jcp.getStoreTypeId() + " and Classification_Id = " + jcp.getClassificationId() + "", null);
@@ -315,6 +321,8 @@ public class RBGTDatabase extends SQLiteOpenHelper {
                     ch.setExist(Boolean.parseBoolean(dbcursor.getString(dbcursor.getColumnIndexOrThrow("EXISTORNOT"))));
                     ch.setImage(dbcursor.getString(dbcursor.getColumnIndexOrThrow("WINDOW_IMAGE")));
                     ch.setReasonId(Integer.parseInt(dbcursor.getString(dbcursor.getColumnIndexOrThrow("REASON_ID"))));
+                    //today
+                    ch.setWindow_Image_refrance(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Window_Image")));
                     list.add(ch);
                     dbcursor.moveToNext();
                 }
@@ -334,7 +342,7 @@ public class RBGTDatabase extends SQLiteOpenHelper {
         ArrayList<CategoryMaster> list = new ArrayList<>();
         Cursor dbcursor = null;
         try {
-            dbcursor = db.rawQuery(" select cm.Category_Id as Category_Id, cm.Category as Category, IFNULL(d.EXISTORNOT,'false') as EXISTORNOT, IFNULL(d.CATEGORY_IMAGE,'') as CATEGORY_IMAGE,IFNULL( d.REASON_ID,'0') as REASON_ID from Category_Master cm  " +
+            dbcursor = db.rawQuery(" select cm.Category_Id as Category_Id, cm.Category as Category, IFNULL(d.EXISTORNOT,'false') as EXISTORNOT, IFNULL(d.CATEGORY_IMAGE,'') as CATEGORY_IMAGE,IFNULL( d.REASON_ID,'0') as REASON_ID, IFNULL(cmap.Category_Planogram_Imageurl,'') as Category_Planogram_Imageurl from Category_Master cm  " +
                     " inner join Mapping_Category_Dressing cmap on cm.Category_Id=cmap.Category_Id " +
                     " left join " +
                     " (select * from CATEGORY_DRESSING_DATA Where STORE_ID = " + jcp.getStoreId() + " and DATE ='" + jcp.getVisitDate() + "') as d on cm.Category_Id = d.CATEGORY_CD " +
@@ -348,6 +356,7 @@ public class RBGTDatabase extends SQLiteOpenHelper {
                     ch.setCategory(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Category")));
                     ch.setExist(Boolean.parseBoolean(dbcursor.getString(dbcursor.getColumnIndexOrThrow("EXISTORNOT"))));
                     ch.setImage(dbcursor.getString(dbcursor.getColumnIndexOrThrow("CATEGORY_IMAGE")));
+                    ch.setCategoryPlanogramImageurl(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Category_Planogram_Imageurl")));
                     ch.setReasonId(Integer.parseInt(dbcursor.getString(dbcursor.getColumnIndexOrThrow("REASON_ID"))));
                     list.add(ch);
                     dbcursor.moveToNext();
@@ -966,6 +975,8 @@ public class RBGTDatabase extends SQLiteOpenHelper {
                 values.put("Latitude", jcpList.get(i).getLatitude());
                 values.put("Longitude", jcpList.get(i).getLongitude());
                 values.put("GeoFencing", jcpList.get(i).getGeoFencing());
+                values.put("Store_Code", jcpList.get(i).getStore_Code());
+                values.put("Classification", jcpList.get(i).getClassification());
 
                 long id = db.insert("Journey_Plan", null, values);
                 if (id == -1) {
@@ -1213,6 +1224,7 @@ public class RBGTDatabase extends SQLiteOpenHelper {
 
                 values.put("Window_Id", data.get(i).getWindowId());
                 values.put("Window", data.get(i).getWindow());
+                values.put("Window_Image", data.get(i).getWindowImage());
 
                 long id = db.insert("Window_Master", null, values);
                 if (id == -1) {
@@ -1349,6 +1361,7 @@ public class RBGTDatabase extends SQLiteOpenHelper {
                 values.put("Distributor_Id", data.get(i).getDistributorId());
                 values.put("Store_Type_Id", data.get(i).getStoreTypeId());
                 values.put("Category_Id", data.get(i).getCategoryId());
+                values.put("Category_Planogram_Imageurl", data.get(i).getCategoryPlanogramImageurl());
                 long id = db.insert("Mapping_Category_Dressing", null, values);
                 if (id == -1) {
                     throw new Exception();
@@ -1428,6 +1441,7 @@ public class RBGTDatabase extends SQLiteOpenHelper {
                     db.delete(CommonString.TABLE_INSERT_CHECKLIST_DATA, null, null);
                     db.delete(CommonString.TABLE_CATEGORY_DRESSING_DATA, null, null);
                     db.delete(CommonString.TABLE_INSERT_CATEGORY_DRESSING_CHECKLIST_DATA, null, null);
+                    db.delete(CommonString.TABLE_STORE_PROFILE_DATA, null, null);
                 }
                 dbcursor.close();
             }
@@ -1527,6 +1541,11 @@ public class RBGTDatabase extends SQLiteOpenHelper {
                     sb.setGeoTag(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Geo_Tag")));
                     sb.setDistributorId(Integer.parseInt(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Distributor_Id"))));
                     sb.setDistributorN(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Distributor")));
+                    sb.setStore_Code(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Store_Code")));
+                    sb.setClassification(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Classification")));
+
+
+
                     dbcursor.moveToNext();
                 }
                 dbcursor.close();
@@ -1635,6 +1654,8 @@ public class RBGTDatabase extends SQLiteOpenHelper {
                     sb.setGeoTag(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Geo_Tag")));
                     sb.setDistributorId(Integer.parseInt(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Distributor_Id"))));
                     sb.setDistributorN(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Distributor")));
+                    sb.setStore_Code(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Store_Code")));
+                    sb.setClassification(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Classification")));
 
                     list.add(sb);
                     dbcursor.moveToNext();
@@ -1879,6 +1900,8 @@ public class RBGTDatabase extends SQLiteOpenHelper {
                     sb.setLongitude(Double.valueOf(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Longitude"))));
                     sb.setLatitude(Double.valueOf(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Latitude"))));
                     sb.setGeoFencing(Integer.valueOf(dbcursor.getString(dbcursor.getColumnIndexOrThrow("GeoFencing"))));
+                    sb.setStore_Code(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Store_Code")));
+                    sb.setClassification(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Classification")));
 
                     if (sb.getStoreTypeId() == 1) {
                         sb.setColourCode(R.color.peachpuff);
@@ -2067,6 +2090,128 @@ public class RBGTDatabase extends SQLiteOpenHelper {
             return filled;
         }
         return filled;
+    }
+
+    public ArrayList<StoreTypeMaster> geVISITED_WITH_MASTERData() {
+        ArrayList<StoreTypeMaster> list = new ArrayList<>();
+        Cursor dbcursor = null;
+
+        try {
+
+            dbcursor = db.rawQuery("SELECT * FROM Store_Type_Master ", null);
+
+            if (dbcursor != null) {
+                dbcursor.moveToFirst();
+                while (!dbcursor.isAfterLast()) {
+                    StoreTypeMaster sb = new StoreTypeMaster();
+
+                    sb.setStoreType(dbcursor.getString(dbcursor.getColumnIndexOrThrow("Store_Type")));
+                    sb.setStoreTypeId(dbcursor.getInt(dbcursor.getColumnIndexOrThrow("Store_Type_Id")));
+                    if (dbcursor.getString(dbcursor.getColumnIndexOrThrow("Show_Reference_Image")).equals(1)) {
+                        sb.setShowReferenceImage(true);
+                    } else {
+                        sb.setShowReferenceImage(false);
+                    }
+
+                    list.add(sb);
+                    dbcursor.moveToNext();
+                }
+                dbcursor.close();
+                return list;
+            }
+
+        } catch (Exception e) {
+            return list;
+        }
+
+        return list;
+    }
+
+    public long insertStoreProfileData(JourneyPlan JCP, StoreProfileGetterSetter storeProfile) {
+        db.delete(CommonString.TABLE_STORE_PROFILE_DATA, " STORE_ID" + "='" + JCP.getStateId() + "' AND VISIT_DATE='" + JCP.getVisitDate() + "'", null);
+        ContentValues values = new ContentValues();
+        long l = 0;
+        try {
+            db.beginTransaction();
+            if (!JCP.getStoreName().isEmpty()) {
+                values.put(CommonString.KEY_STORE_ID, JCP.getStoreId());
+                values.put(CommonString.KEY_VISIT_DATE, JCP.getVisitDate());
+                values.put(CommonString.KEY_STORE_TYPE, storeProfile.getStore_type());
+                values.put(CommonString.KEY_STORE_TYPE_CD, storeProfile.getStore_type_cd());
+                values.put(CommonString.KEY_STORE_NAME, JCP.getStoreName());
+                values.put(CommonString.KEY_STORE_ADDRESS, JCP.getAddress1());
+                values.put(CommonString.KEY_STORE_CITY, JCP.getCity());
+
+
+                l = db.insert(CommonString.TABLE_STORE_PROFILE_DATA, null, values);
+            }
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        } catch (Exception ex) {
+            Log.d("Database Exception", " while Insert Header Data " + ex.toString());
+        }
+        return l;
+    }
+
+
+    public StoreProfileGetterSetter getStoreProfileData(String store_cd, String visit_date) {
+        StoreProfileGetterSetter sb = new StoreProfileGetterSetter();
+        Cursor dbcursor = null;
+        try {
+          //  dbcursor = db.rawQuery("SELECT * FROM STORE_PROFILE_DATA WHERE STORE_ID ='" + store_cd + "' AND VISIT_DATE='" + visit_date + "'", null);
+            dbcursor = db.rawQuery("SELECT * FROM STORE_PROFILE_DATA WHERE STORE_ID ='" + store_cd + "' AND VISIT_DATE='" + visit_date + "'", null);
+
+            if (dbcursor != null) {
+                dbcursor.moveToFirst();
+                while (!dbcursor.isAfterLast()) {
+                    sb.setStore_type_cd((dbcursor.getString(dbcursor.getColumnIndexOrThrow(CommonString.KEY_STORE_TYPE_CD))));
+                    sb.setStore_type(dbcursor.getString(dbcursor.getColumnIndexOrThrow(CommonString.KEY_STORE_TYPE)));
+                    sb.setStoreCd(dbcursor.getString(dbcursor.getColumnIndexOrThrow(CommonString.KEY_STORE_ID)));
+                    sb.setStore_visit_date(dbcursor.getString(dbcursor.getColumnIndexOrThrow(CommonString.KEY_VISIT_DATE)));
+                    sb.setStore_name(dbcursor.getString(dbcursor.getColumnIndexOrThrow(CommonString.KEY_STORE_NAME)));
+                    sb.setStore_addres(dbcursor.getString(dbcursor.getColumnIndexOrThrow(CommonString.KEY_STORE_ADDRESS)));
+                    sb.setStore_city(dbcursor.getString(dbcursor.getColumnIndexOrThrow(CommonString.KEY_STORE_CITY)));
+
+                    dbcursor.moveToNext();
+                }
+                dbcursor.close();
+                return sb;
+            }
+
+        } catch (Exception e) {
+            Log.d("Exception get JCP!", e.toString());
+            return sb;
+        }
+
+        return sb;
+    }
+
+    public boolean insertStoreTypeMasterData(StoreTypeMasterGetterSetter storeTypeMaster) {
+        db.delete("Store_Type_Master", null, null);
+        ContentValues values = new ContentValues();
+        List<StoreTypeMaster> data = storeTypeMaster.getStoreTypeMaster();
+        try {
+            if (data.size() == 0) {
+                return false;
+            }
+
+            for (int i = 0; i < data.size(); i++) {
+
+                values.put("Store_Type", data.get(i).getStoreType());
+                values.put("Store_Type_Id", data.get(i).getStoreTypeId());
+                values.put("Show_Reference_Image", data.get(i).getShowReferenceImage());
+
+                long id = db.insert("Store_Type_Master", null, values);
+                if (id == -1) {
+                    throw new Exception();
+                }
+            }
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Log.d("Database Exception  ", ex.toString());
+            return false;
+        }
     }
 
 

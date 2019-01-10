@@ -16,6 +16,19 @@ public class WindowMaster implements Serializable {
     @Expose
     private String window;
 
+    @SerializedName("Window_Image")
+    @Expose
+    private String windowImage;
+
+    public String getWindowImage() {
+        return windowImage;
+    }
+
+    public void setWindowImage(String windowImage) {
+        this.windowImage = windowImage;
+    }
+
+
     public Integer getWindowId() {
         return windowId;
     }
@@ -74,6 +87,15 @@ public class WindowMaster implements Serializable {
     String checklist_Id;
     String checklist;
     String image="";
+    String Window_Image_refrance;
+
+    public String getWindow_Image_refrance() {
+        return Window_Image_refrance;
+    }
+
+    public void setWindow_Image_refrance(String window_Image_refrance) {
+        Window_Image_refrance = window_Image_refrance;
+    }
 
     public String getImage2() {
         return image2;

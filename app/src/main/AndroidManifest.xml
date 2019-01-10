@@ -34,7 +34,8 @@
             android:value="false" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAPlSHAPRYXJQSOjpw1dlvOaQaBOdLBJpg" />
+            android:value="AIzaSyDSYcRdNUfUWIgpIfWLNuRfpyNkkkLt8vU" />
+      <!--  android:value="AIzaSyAPlSHAPRYXJQSOjpw1dlvOaQaBOdLBJpg"-->
 
         <activity
             android:name=".SplashScreenActivity"
@@ -149,6 +150,11 @@
             android:configChanges="screenSize|orientation|keyboardHidden"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+        android:name=".dailyEntry.StoreProfileActivity"
+        android:label="@string/title_activity_store_profile"
+        android:screenOrientation="portrait"
+        android:theme="@style/AppTheme.NoActionBar"></activity>
 
     </application>
 

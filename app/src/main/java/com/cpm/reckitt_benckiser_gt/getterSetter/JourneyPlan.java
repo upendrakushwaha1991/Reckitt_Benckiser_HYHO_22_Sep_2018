@@ -95,6 +95,29 @@ public class JourneyPlan implements Serializable {
     @SerializedName("GeoFencing")
     @Expose
     private Integer geoFencing;
+    @SerializedName("Store_Code")
+    @Expose
+    private String store_Code;
+
+    @SerializedName("Classification")
+    @Expose
+    private String Classification;
+
+    public String getClassification() {
+        return Classification;
+    }
+
+    public void setClassification(String classification) {
+        Classification = classification;
+    }
+
+    public String getStore_Code() {
+        return store_Code;
+    }
+
+    public void setStore_Code(String store_Code) {
+        this.store_Code = store_Code;
+    }
 
     public Double getLatitude() {
         return latitude;

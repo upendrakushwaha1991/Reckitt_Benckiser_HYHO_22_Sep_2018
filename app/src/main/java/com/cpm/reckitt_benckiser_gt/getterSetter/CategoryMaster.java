@@ -85,5 +85,13 @@ public class CategoryMaster {
     boolean exist;
     int reasonId;
     String reason;
+    String categoryPlanogramImageurl;
 
+    public String getCategoryPlanogramImageurl() {
+        return categoryPlanogramImageurl;
+    }
+
+    public void setCategoryPlanogramImageurl(String categoryPlanogramImageurl) {
+        this.categoryPlanogramImageurl = categoryPlanogramImageurl;
+    }
 }

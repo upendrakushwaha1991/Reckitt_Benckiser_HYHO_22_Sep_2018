@@ -30,6 +30,8 @@ import com.cpm.reckitt_benckiser_gt.getterSetter.NonCategoryReasonGetterSetter;
 import com.cpm.reckitt_benckiser_gt.getterSetter.NonWindowReasonGetterSetter;
 import com.cpm.reckitt_benckiser_gt.getterSetter.NonWorkingReasonGetterSetter;
 import com.cpm.reckitt_benckiser_gt.getterSetter.ReferenceVariablesForDownloadActivity;
+import com.cpm.reckitt_benckiser_gt.getterSetter.StoreProfileGetterSetter;
+import com.cpm.reckitt_benckiser_gt.getterSetter.StoreTypeMasterGetterSetter;
 import com.cpm.reckitt_benckiser_gt.getterSetter.TableStructure;
 import com.cpm.reckitt_benckiser_gt.getterSetter.TableStructureGetterSetter;
 import com.cpm.reckitt_benckiser_gt.getterSetter.WindowCheckAnswerGetterSetter;
@@ -525,6 +527,31 @@ public class UploadImageWithRetrofit extends ReferenceVariablesForDownloadActivi
                     type = CommonString.COVERAGE_DETAIL;
                     //endregion
                     break;
+
+                case "Store_Profile":
+                    db.open();
+                    StoreProfileGetterSetter storePGT = db.getStoreProfileData(coverageList.get(coverageIndex).getStoreId(), coverageList.get(coverageIndex).getVisitDate());
+                    if (storePGT.getStore_type_cd() != null && !storePGT.getStore_type_cd().equals("")) {
+                        JSONArray storeDetail = new JSONArray();
+                        jsonObject = new JSONObject();
+                        jsonObject.put("MID", coverageList.get(coverageIndex).getMID());
+                        jsonObject.put("UserId", coverageList.get(coverageIndex).getUserId());
+                        jsonObject.put("Store_Type_cd", storePGT.getStore_type_cd());
+                        jsonObject.put("Store_Name", storePGT.getStore_name());
+                        jsonObject.put("Visit_date", storePGT.getStore_visit_date());
+                        jsonObject.put("Address", storePGT.getStore_addres());
+                        jsonObject.put("City", storePGT.getStore_city());
+                        storeDetail.put(jsonObject);
+                        jsonObject = new JSONObject();
+                        jsonObject.put("MID", coverageList.get(coverageIndex).getMID());
+                        jsonObject.put("Keys", "STORE_PROFILE_DATA");
+                        jsonObject.put("JsonData", storeDetail.toString());
+                        jsonObject.put("UserId", coverageList.get(coverageIndex).getUserId());
+                        jsonString = jsonObject.toString();
+                        type = CommonString.UPLOADJsonDetail;
+                    }
+                    break;
+
                 case "Window_Data":
                     //region Window_Data
                     db.open();
@@ -939,6 +966,7 @@ public class UploadImageWithRetrofit extends ReferenceVariablesForDownloadActivi
 
             if (status != null && !status.equalsIgnoreCase(CommonString.KEY_D) && !coverageList.get(coverageIndex).getReasonid().equalsIgnoreCase("11")) {
                 keyList.add("CoverageDetail_latest");
+                keyList.add("Store_Profile");
                 keyList.add("Window_Data");
                 keyList.add("Category_Dressing_data");
                 keyList.add("Category_DBSR_data");
@@ -1609,6 +1637,18 @@ public class UploadImageWithRetrofit extends ReferenceVariablesForDownloadActivi
                                                 throw new java.lang.Exception();
                                             }
                                             break;
+                                        case "Store_Type_Master":
+                                            if (!data.contains("No Data")) {
+                                                storeTypeMasterGetterSetter = new Gson().fromJson(data, StoreTypeMasterGetterSetter.class);
+                                                if (storeTypeMasterGetterSetter != null && !db.insertStoreTypeMasterData(storeTypeMasterGetterSetter)) {
+                                                    pd.dismiss();
+                                                    AlertandMessages.showSnackbarMsg(context, "Store Type Master data not saved");
+                                                }
+                                            } else {
+                                                throw new java.lang.Exception();
+                                            }
+                                            break;
+
                                     }
                                     //endregion
                                 }
